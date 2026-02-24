@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Janani.AI — Unlock Your Inner Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --black: #04020a;
+    --deep: #080414;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #7a6030;
+    --purple: #6b21a8;
+    --purple-light: #a855f7;
+    --purple-glow: #9333ea;
+    --white: #f5f0e8;
+    --muted: #8a7e6a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+  }
+
+  /* Stars Background */
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; }
+    50% { opacity: var(--opacity, 0.6); }
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(4,2,10,0.95), transparent);
+  }
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--purple-light); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    padding: 10px 24px;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+    background: transparent;
+    cursor: none;
+  }
+  .nav-cta:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    z-index: 1;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .orb-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(107,33,168,0.3), transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 6s ease-in-out infinite;
+  }
+  .orb-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.15), transparent 70%);
+    top: 30%; left: 20%;
+    animation: float 8s ease-in-out infinite;
+  }
+  .orb-3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(147,51,234,0.2), transparent 70%);
+    bottom: 20%; right: 15%;
+    animation: float 10s ease-in-out infinite reverse;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-30px); }
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-dim);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    animation: fadeUp 1s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(48px, 8vw, 110px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    margin-bottom: 16px;
+    animation: fadeUp 1s 0.2s ease both;
+  }
+  .hero-title .gold { color: var(--gold); }
+  .hero-title .purple { color: var(--purple-light); }
+
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(20px, 3vw, 32px);
+    color: var(--muted);
+    margin-bottom: 48px;
+    animation: fadeUp 1s 0.4s ease both;
+  }
+
+  .hero-desc {
+    max-width: 560px;
+    margin: 0 auto 64px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.6);
+    animation: fadeUp 1s 0.6s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 1s 0.8s ease both;
+  }
+
+  .btn-primary {
+    padding: 16px 48px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color: var(--black);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .btn-primary:hover::before { opacity: 1; }
+  .btn-primary span { position: relative; z-index: 1; }
+
+  .btn-secondary {
+    padding: 16px 48px;
+    border: 1px solid rgba(168,85,247,0.4);
+    color: var(--purple-light);
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover {
+    background: rgba(168,85,247,0.1);
+    border-color: var(--purple-light);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Sacred geometry line */
+  .divider {
+    position: relative;
+    text-align: center;
+    padding: 20px 0;
+    z-index: 1;
+  }
+  .divider::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+  }
+  .divider span {
+    position: relative;
+    background: var(--black);
+    padding: 0 20px;
+    color: var(--gold);
+    font-size: 20px;
+  }
+
+  /* Section base */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 48px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(32px, 4vw, 56px);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  /* How it works */
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+    margin-top: 64px;
+    background: var(--gold-dim);
+  }
+  .how-card {
+    background: var(--deep);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+  }
+  .how-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--purple), var(--gold));
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .how-card:hover { background: #0d0820; }
+  .how-card:hover::before { opacity: 1; }
+
+  .how-number {
+    font-family: 'Cinzel', serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: rgba(201,168,76,0.1);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  .how-icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  .how-card h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: var(--gold);
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+  }
+  .how-card p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.55);
+  }
+
+  /* Features */
+  .features {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 64px;
+  }
+  .feature-card {
+    padding: 40px;
+    border: 1px solid rgba(201,168,76,0.1);
+    background: rgba(255,255,255,0.02);
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, var(--purple-glow), var(--gold));
+    transform: scaleX(0);
+    transition: transform 0.4s;
+    transform-origin: left;
+  }
+  .feature-card:hover {
+    border-color: rgba(201,168,76,0.3);
+    background: rgba(107,33,168,0.05);
+  }
+  .feature-card:hover::after { transform: scaleX(1); }
+
+  .feature-icon {
+    width: 48px; height: 48px;
+    border: 1px solid rgba(201,168,76,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 24px;
+    color: var(--gold);
+  }
+  .feature-card h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    color: var(--white);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .feature-card p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.5);
+  }
+
+  /* Intelligence Profile */
+  .profile-section {
+    background: linear-gradient(135deg, rgba(107,33,168,0.08), rgba(201,168,76,0.04));
+    border-top: 1px solid rgba(201,168,76,0.1);
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  .profile-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .profile-wheel {
+    width: 300px; height: 300px;
+    margin: 64px auto 48px;
+    position: relative;
+  }
+  .wheel-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid;
+    animation: spin var(--speed, 20s) linear infinite;
+    animation-direction: var(--dir, normal);
+  }
+  .ring-1 { inset: 0; border-color: rgba(201,168,76,0.3); }
+  .ring-2 { inset: 24px; border-color: rgba(168,85,247,0.3); animation-duration: 15s; }
+  .ring-3 { inset: 48px; border-color: rgba(201,168,76,0.2); animation-duration: 25s; animation-direction: reverse; }
+  .ring-4 { inset: 72px; border-color: rgba(168,85,247,0.2); animation-duration: 12s; }
+  .wheel-center {
+    position: absolute;
+    inset: 96px;
+    background: radial-gradient(circle, rgba(107,33,168,0.4), rgba(4,2,10,0.9));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+  .wheel-dot {
+    position: absolute;
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    top: -3px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px var(--gold);
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .traits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+    text-align: left;
+  }
+  .trait {
+    padding: 20px;
+    border: 1px solid rgba(201,168,76,0.1);
+    background: rgba(255,255,255,0.02);
+  }
+  .trait-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 8px;
+  }
+  .trait-bar {
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .trait-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--purple-glow), var(--gold));
+    animation: fillBar 2s ease both;
+    animation-play-state: paused;
+  }
+  .trait.visible .trait-fill { animation-play-state: running; }
+  @keyframes fillBar {
+    from { width: 0; }
+    to { width: var(--pct, 70%); }
+  }
+  .trait-value {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    color: var(--gold);
+  }
+
+  /* Pricing */
+  .pricing {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 64px;
+    background: rgba(201,168,76,0.2);
+  }
+  .price-card {
+    background: var(--deep);
+    padding: 48px 40px;
+    text-align: left;
+    position: relative;
+  }
+  .price-card.featured {
+    background: linear-gradient(135deg, #0d0820, #08040f);
+  }
+  .price-badge {
+    position: absolute;
+    top: 24px; right: 24px;
+    padding: 4px 12px;
+    background: var(--gold);
+    color: var(--black);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .price-tier {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .price-amount {
+    font-family: 'Cinzel', serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .price-period {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+  .price-features {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+  .price-features li {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 14px;
+    color: rgba(245,240,232,0.7);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .price-features li::before {
+    content: '✦';
+    color: var(--gold);
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  .price-features li.muted { color: rgba(245,240,232,0.3); }
+  .price-features li.muted::before { color: rgba(245,240,232,0.2); }
+
+  /* Testimonial / Quote */
+  .quote-section {
+    text-align: center;
+    padding: 80px 48px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .quote-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 120px;
+    color: rgba(201,168,76,0.15);
+    line-height: 0.5;
+    margin-bottom: 40px;
+  }
+  .quote-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(24px, 3vw, 40px);
+    font-style: italic;
+    line-height: 1.5;
+    color: rgba(245,240,232,0.85);
+    margin-bottom: 32px;
+  }
+  .quote-text .highlight { color: var(--gold); }
+
+  /* CTA Section */
+  .cta-section {
+    text-align: center;
+    padding: 120px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(107,33,168,0.2), transparent 70%);
+  }
+  .cta-section .section-title { position: relative; z-index: 1; }
+  .cta-section p {
+    position: relative;
+    z-index: 1;
+    font-size: 18px;
+    color: rgba(245,240,232,0.55);
+    margin: 24px auto 48px;
+    max-width: 500px;
+    line-height: 1.8;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+  }
+  .cta-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid rgba(201,168,76,0.1);
+    padding: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+    position: relative;
+  }
+  .footer-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: var(--gold);
+  }
+  .footer-logo span { color: var(--purple-light); }
+  footer p {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .traits-grid { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <a href="#" class="nav-logo">Janani<span>.AI</span></a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <a href="#start" class="nav-cta">Begin Journey</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-orb orb-1"></div>
+  <div class="hero-orb orb-2"></div>
+  <div class="hero-orb orb-3"></div>
+
+  <div>
+    <div class="hero-badge">✦ Personal Intelligence Engine ✦</div>
+    <h1 class="hero-title">
+      <span class="gold">Janani</span><span class="purple">.AI</span>
+    </h1>
+    <p class="hero-subtitle">She watches. She knows. She unlocks you.</p>
+    <p class="hero-desc">
+      An ancient wisdom meets modern intelligence. Janani observes your patterns, 
+      decodes your hidden strengths, and guides you to become who you were always meant to be.
+    </p>
+    <div class="hero-actions">
+      <a href="#start" class="btn-primary"><span>Unlock Your Intelligence</span></a>
+      <a href="#how" class="btn-secondary">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><span>✦</span></div>
+
+<!-- How It Works -->
+<section id="how">
+  <div style="max-width:1200px;margin:0 auto;">
+    <p class="section-label reveal">The Process</p>
+    <h2 class="section-title reveal">How Janani <span style="color:var(--gold)">Reads You</span></h2>
+    <div class="how-grid">
+      <div class="how-card reveal">
+        <div class="how-number">01</div>
+        <div class="how-icon">🌅</div>
+        <h3>Morning Awakening</h3>
+        <p>Each morning, Janani greets you. You share your energy, intention, and mood. She begins watching — not your screen, but your soul.</p>
+      </div>
+      <div class="how-card reveal">
+        <div class="how-number">02</div>
+        <div class="how-icon">👁️</div>
+        <h3>Daily Observation</h3>
+        <p>Throughout the day, log your habits, emotions, focus. Janani silently weaves patterns from what you share — building your inner map.</p>
+      </div>
+      <div class="how-card reveal">
+        <div class="how-number">03</div>
+        <div class="how-icon">🌙</div>
+        <h3>Evening Reflection</h3>
+        <p>At dusk, Janani speaks. She tells you what she saw — your discipline score, your hidden strength of the day, your correction for tomorrow.</p>
+      </div>
+      <div class="how-card reveal">
+        <div class="how-number">04</div>
+        <div class="how-icon">⚡</div>
+        <h3>Intelligence Unlocked</h3>
+        <p>Over weeks, Janani reveals the intelligence you didn't know you had. Your unique superpower profile — built from your own patterns.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><span>✦</span></div>
+
+<!-- Intelligence Profile -->
+<section class="profile-section">
+  <div class="profile-inner">
+    <p class="section-label reveal">What Janani Reveals</p>
+    <h2 class="section-title reveal">Your <span style="color:var(--gold)">Inner Intelligence</span><br/>Profile</h2>
+    <p class="reveal" style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:rgba(245,240,232,0.6);max-width:600px;margin:0 auto;">
+      Every person has a unique pattern of genius hidden within their daily behaviour. Janani finds yours.
+    </p>
+
+    <div class="profile-wheel">
+      <div class="wheel-ring ring-1"><div class="wheel-dot"></div></div>
+      <div class="wheel-ring ring-2"></div>
+      <div class="wheel-ring ring-3"></div>
+      <div class="wheel-ring ring-4"></div>
+      <div class="wheel-center">🧠</div>
+    </div>
+
+    <div class="traits-grid reveal">
+      <div class="trait">
+        <div class="trait-label">Discipline</div>
+        <div class="trait-bar"><div class="trait-fill" style="--pct:82%"></div></div>
+        <div class="trait-value">82</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Focus Power</div>
+        <div class="trait-bar"><div class="trait-fill" style="--pct:67%"></div></div>
+        <div class="trait-value">67</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Resilience</div>
+        <div class="trait-bar"><div class="trait-fill" style="--pct:91%"></div></div>
+        <div class="trait-value">91</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Hidden Power</div>
+        <div class="trait-bar"><div class="trait-fill" style="--pct:74%"></div></div>
+        <div class="trait-value">74</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Consistency</div>
+        <div class="trait-bar"><div class="trait-fill" style="--pct:58%"></div></div>
+        <div class="trait-value">58</div>
+      </div>
+      <div class="trait">
+        <div class="trait-label">Potential</div>
+        <div class="trait-bar"><div class="trait-fill" style="--pct:95%"></div></div>
+        <div class="trait-value">95</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features">
+  <div class="features">
+    <p class="section-label reveal">What's Inside</p>
+    <h2 class="section-title reveal">Everything Janani <span style="color:var(--gold)">Does For You</span></h2>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">🌊</div>
+        <h3>Mood Intelligence</h3>
+        <p>Track your emotional states daily. Janani finds patterns in your moods — revealing what truly drives and drains you.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">⚙️</div>
+        <h3>Discipline Engine</h3>
+        <p>Your daily discipline scored 1–5. Not just a number — a mirror showing your true commitment to your goals.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔍</div>
+        <h3>Hidden Pattern Detection</h3>
+        <p>After 30 days, Janani reveals patterns invisible to the naked eye. The hidden architecture of your peak performance.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">📖</div>
+        <h3>Sacred Journal</h3>
+        <p>Your private space. Write freely. Janani reads between the lines and reflects back what you cannot yet see.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🎯</div>
+        <h3>Dream Tracking</h3>
+        <p>Set your deepest goals. Janani watches your daily actions and tells you honestly — are you truly walking towards your dream?</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">💬</div>
+        <h3>Conversation with Janani</h3>
+        <p>Talk to her anytime. She knows your history, your patterns, your strengths. Every answer is deeply personal to you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><span>✦</span></div>
+
+<!-- Quote -->
+<div class="quote-section reveal">
+  <div class="quote-mark">"</div>
+  <p class="quote-text">
+    You don't lack knowledge. You lack <span class="highlight">clarity about who you already are.</span> 
+    Janani gives you that clarity.
+  </p>
+</div>
+
+<!-- Pricing -->
+<section id="pricing">
+  <div class="pricing">
+    <p class="section-label reveal">Simple Pricing</p>
+    <h2 class="section-title reveal">Begin Free. <span style="color:var(--gold)">Go Deeper</span> When Ready.</h2>
+    <div class="pricing-grid reveal">
+      <div class="price-card">
+        <p class="price-tier">Free Forever</p>
+        <div class="price-amount">$0</div>
+        <p class="price-period">No credit card needed</p>
+        <ul class="price-features">
+          <li>Daily check-ins (morning & evening)</li>
+          <li>Basic mood tracking</li>
+          <li>Discipline score (daily)</li>
+          <li>7-day history</li>
+          <li class="muted">Hidden pattern detection</li>
+          <li class="muted">Inner Intelligence Profile</li>
+          <li class="muted">Unlimited AI conversations</li>
+        </ul>
+        <a href="#start" class="btn-secondary" style="display:block;text-align:center;">Start Free</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">Most Popular</div>
+        <p class="price-tier">Inner Circle</p>
+        <div class="price-amount">$1.08</div>
+        <p class="price-period">per month — less than a coffee</p>
+        <ul class="price-features">
+          <li>Everything in Free</li>
+          <li>Hidden pattern detection</li>
+          <li>Full Inner Intelligence Profile</li>
+          <li>Unlimited AI conversations</li>
+          <li>Deep daily insights</li>
+          <li>Multiple languages</li>
+          <li>Priority access to new features</li>
+        </ul>
+        <a href="#start" class="btn-primary" style="display:block;text-align:center;"><span>Unlock Everything</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="start">
+  <h2 class="section-title reveal">Are You Ready to Meet<br/><span style="color:var(--gold)">Your True Self?</span></h2>
+  <p class="reveal">The intelligence you seek is already inside you. Janani simply helps you find it.</p>
+  <div class="cta-actions reveal">
+    <a href="#" class="btn-primary"><span>Begin Your Journey — It's Free</span></a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">Janani<span>.AI</span></div>
+  <p>© 2025 Janani.AI — Unlock Your Inner Intelligence</p>
+  <p style="font-size:12px;color:rgba(138,126,106,0.5);">Built with 🔥 and purpose</p>
+</footer>
+
+<script>
+// Stars
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 150; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 2.5 + 0.5;
+  s.style.cssText = `
+    width:${size}px;height:${size}px;
+    left:${Math.random()*100}%;top:${Math.random()*100}%;
+    --dur:${Math.random()*4+2}s;
+    --delay:${Math.random()*4}s;
+    --opacity:${Math.random()*0.7+0.1};
+  `;
+  starsEl.appendChild(s);
+}
+
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+function animRing() {
+  rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // traits
+      e.target.querySelectorAll && e.target.querySelectorAll('.trait').forEach(t => t.classList.add('visible'));
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
