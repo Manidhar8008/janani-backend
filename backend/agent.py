@@ -9,15 +9,31 @@ load_dotenv()
 
 def ask_ai(prompt):
     api_key = os.getenv("GROQ_API_KEY")
+    
+    # MOCK MODE: If no API key, return mock response for testing
     if not api_key:
-        raise ValueError("GROQ_API_KEY environment variable is not set")
+        print("[MOCK MODE] No API key. Returning mock response.")
+        return get_mock_response(prompt)
 
-    client = Groq(api_key=api_key)
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.choices[0].message.content
+    try:
+        client = Groq(api_key=api_key)
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"[ERROR] API call failed: {e}. Using mock response.")
+        return get_mock_response(prompt)
+
+def get_mock_response(prompt):
+    """Mock responses for testing without API key"""
+    if "morning check-in" in prompt.lower() or "energy level" in prompt.lower():
+        return "🔥 Janani here. Your energy is RISING. Lock in on your intention and execute with precision. No distractions. Go."
+    elif "reflection" in prompt.lower() or "daily reflection" in prompt.lower():
+        return "✦ Analyzed your reflection. You showed discipline today. Keep this momentum. Tomorrow, push 5% harder."
+    else:
+        return "Understood. Stay focused. Stay disciplined. 🔥"
 
 
 # ----------------------------
