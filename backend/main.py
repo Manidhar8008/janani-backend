@@ -14,6 +14,10 @@ Be strict but constructive.
 Focus on consistency.
 """
 
+@app.get("/")
+def health():
+    return {"status": "ok", "message": "Janani Backend is running"}
+
 @app.post("/chat")
 def chat(req: ChatRequest):
     full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {req.message}"
