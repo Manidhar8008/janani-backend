@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#080808" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Ani.ai — Behavior Intelligence</title>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">ANI.AI</div>
+        <h1>Write. Compare. Score. Grow.</h1>
+        <p>Turn your writing archive into a living behavioral timeline.</p>
+      </div>
+      <div class="score" id="score">—</div>
+    </header>
+
+    <section class="card capture">
+      <label for="entry">What are you writing today?</label>
+      <textarea id="entry" placeholder="Write a thought, plan, reflection, decision, or daily log..."></textarea>
+      <div class="row">
+        <button id="saveText">Capture writing</button>
+        <label class="camera">📷 Handwritten page<input id="photo" type="file" accept="image/*" capture="environment" /></label>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card"><span>Captures</span><strong id="count">0</strong></article>
+      <article class="card"><span>Cadence</span><strong id="cadence">0 days</strong></article>
+      <article class="card"><span>Progress</span><strong id="progress">—</strong></article>
+    </section>
+
+    <section class="card">
+      <div class="section-head"><h2>Recent writing</h2><button class="ghost" id="export">Export JSON</button></div>
+      <div id="timeline" class="timeline"></div>
+    </section>
+
+    <section class="card insight">
+      <div class="eyebrow">BEHAVIOR ENGINE</div>
+      <h2 id="insightTitle">Start writing to create your baseline.</h2>
+      <p id="insightBody">Ani.ai compares your own writing across time. The prototype keeps raw evidence attached to every derived metric.</p>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
