@@ -1,8 +1,9 @@
 """Legacy AI-generated content catalog.
 
 Stores metadata for previously generated images, videos, audio, and text without
-checking large binary assets into Git. The catalog is intentionally provider-
-agnostic so old generated content can be restored into the current JAN AI flow.
+checking large binary assets into Git. The catalog is provider-agnostic so old
+generated content can be restored into the current JAN AI flow and selected as
+training material for the built-in model pipeline.
 
 The SQLite database path can be overridden with LEGACY_CONTENT_DB. For shared
 production use, keep the database in durable storage and point this module at it.
@@ -36,7 +37,10 @@ CREATE TABLE IF NOT EXISTS content_assets (
     metadata_json TEXT,
     created_at TEXT NOT NULL,
     imported_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    training_eligible INTEGER NOT NULL DEFAULT 0 CHECK(training_eligible IN (0, 1)),
+    training_status TEXT NOT NULL DEFAULT 'pending',
+    training_notes TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_content_assets_type
@@ -47,6 +51,8 @@ CREATE INDEX IF NOT EXISTS idx_content_assets_created_at
     ON content_assets(created_at);
 CREATE INDEX IF NOT EXISTS idx_content_assets_source_url
     ON content_assets(source_url);
+CREATE INDEX IF NOT EXISTS idx_content_assets_training
+    ON content_assets(training_eligible, training_status);
 """
 
 
@@ -66,6 +72,9 @@ class ContentAsset:
     mime_type: Optional[str]
     metadata_json: Optional[str]
     created_at: str
+    training_eligible: bool = False
+    training_status: str = "pending"
+    training_notes: Optional[str] = None
 
 
 def connect(db_path: Path | str = DB_PATH) -> sqlite3.Connection:
@@ -82,6 +91,17 @@ def initialize(db_path: Path | str = DB_PATH) -> None:
     """Create the shared legacy-content schema when it does not exist."""
     with closing(connect(db_path)) as conn:
         conn.executescript(SCHEMA)
+        # Make the module safe for databases created by the first PR revision.
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(content_assets)")}
+        migrations = {
+            "training_eligible": "ALTER TABLE content_assets ADD COLUMN training_eligible INTEGER NOT NULL DEFAULT 0 CHECK(training_eligible IN (0, 1))",
+            "training_status": "ALTER TABLE content_assets ADD COLUMN training_status TEXT NOT NULL DEFAULT 'pending'",
+            "training_notes": "ALTER TABLE content_assets ADD COLUMN training_notes TEXT",
+        }
+        for name, statement in migrations.items():
+            if name not in columns:
+                conn.execute(statement)
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_content_assets_training ON content_assets(training_eligible, training_status)")
         conn.commit()
 
 
@@ -94,8 +114,9 @@ def upsert_asset(asset: ContentAsset, db_path: Path | str = DB_PATH) -> int:
     sql = """
     INSERT INTO content_assets (
         external_id, asset_type, title, description, prompt, provider, model,
-        source_url, local_path, thumbnail_path, mime_type, metadata_json, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        source_url, local_path, thumbnail_path, mime_type, metadata_json, created_at,
+        training_eligible, training_status, training_notes
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(external_id) DO UPDATE SET
         asset_type=excluded.asset_type,
         title=excluded.title,
@@ -109,6 +130,9 @@ def upsert_asset(asset: ContentAsset, db_path: Path | str = DB_PATH) -> int:
         mime_type=excluded.mime_type,
         metadata_json=excluded.metadata_json,
         created_at=excluded.created_at,
+        training_eligible=excluded.training_eligible,
+        training_status=excluded.training_status,
+        training_notes=excluded.training_notes,
         updated_at=CURRENT_TIMESTAMP
     RETURNING id
     """
@@ -127,6 +151,9 @@ def upsert_asset(asset: ContentAsset, db_path: Path | str = DB_PATH) -> int:
         asset.mime_type,
         asset.metadata_json,
         asset.created_at,
+        int(asset.training_eligible),
+        asset.training_status,
+        asset.training_notes,
     )
 
     with closing(connect(db_path)) as conn:
@@ -139,10 +166,12 @@ def retrieve_assets(
     asset_type: Optional[str] = None,
     provider: Optional[str] = None,
     query: Optional[str] = None,
+    training_eligible: Optional[bool] = None,
+    training_status: Optional[str] = None,
     limit: int = 100,
     db_path: Path | str = DB_PATH,
 ) -> list[dict]:
-    """Retrieve legacy assets for reuse in the current content pipeline."""
+    """Retrieve legacy assets for reuse or model-training preparation."""
     initialize(db_path)
     if limit < 1 or limit > 1000:
         raise ValueError("limit must be between 1 and 1000")
@@ -160,12 +189,19 @@ def retrieve_assets(
         clauses.append("(title LIKE ? OR description LIKE ? OR prompt LIKE ?)")
         needle = f"%{query}%"
         values.extend([needle, needle, needle])
+    if training_eligible is not None:
+        clauses.append("training_eligible = ?")
+        values.append(int(training_eligible))
+    if training_status:
+        clauses.append("training_status = ?")
+        values.append(training_status)
 
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
     sql = f"""
         SELECT id, external_id, asset_type, title, description, prompt,
                provider, model, source_url, local_path, thumbnail_path,
-               mime_type, metadata_json, created_at, imported_at, updated_at
+               mime_type, metadata_json, created_at, imported_at, updated_at,
+               training_eligible, training_status, training_notes
         FROM content_assets
         {where}
         ORDER BY created_at DESC, id DESC
@@ -175,6 +211,26 @@ def retrieve_assets(
 
     with closing(connect(db_path)) as conn:
         return [dict(row) for row in conn.execute(sql, values).fetchall()]
+
+
+def mark_training_status(
+    external_id: str,
+    status: str,
+    notes: Optional[str] = None,
+    db_path: Path | str = DB_PATH,
+) -> None:
+    """Update the training lifecycle for an imported asset."""
+    initialize(db_path)
+    with closing(connect(db_path)) as conn:
+        result = conn.execute(
+            """UPDATE content_assets
+               SET training_status = ?, training_notes = ?, updated_at = CURRENT_TIMESTAMP
+               WHERE external_id = ?""",
+            (status, notes, external_id),
+        )
+        if result.rowcount == 0:
+            raise KeyError(f"Unknown external_id: {external_id}")
+        conn.commit()
 
 
 def import_assets(
